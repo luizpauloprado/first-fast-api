@@ -13,7 +13,7 @@ pip3 install -r requirements.txt
 
 ## Deps
 ```
-pip3 install fastapi
+pip3 install "fastapi[standard]"
 pip3 install pytest
 ```
 
