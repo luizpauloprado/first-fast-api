@@ -19,4 +19,5 @@ pytest test_app.py
 
 ## Utils
 [Guia Completo para Usar o Virtual Environment (venv) no Python](https://dev.to/franciscojdsjr/guia-completo-para-usar-o-virtual-environment-venv-no-python-57bo)
+
 [Virtual Environments](https://fastapi.tiangolo.com/virtual-environments/#check-the-virtual-environment-is-active)
