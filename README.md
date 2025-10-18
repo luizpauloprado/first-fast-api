@@ -1,6 +1,11 @@
 # First Python FastAPI 🚀
 My first FastAPI project
 
+## Run
+```
+fastapi dev main.py
+```
+
 ## Create virtual environment
 ```
 pip3 install -r requirements.txt
