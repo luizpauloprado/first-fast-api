@@ -6,9 +6,20 @@ My first FastAPI project
 fastapi dev main.py
 ```
 
-## Create virtual environment
+## Virtual environment
+Install deps:
 ```
 pip3 install -r requirements.txt
+```
+
+Activate:
+```
+source .venv/bin/activate
+```
+
+Deactivate:
+```
+deactivate
 ```
 
 ## Deps
