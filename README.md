@@ -3,7 +3,7 @@ My first FastAPI project
 
 ## Create virtual environment
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Deps
