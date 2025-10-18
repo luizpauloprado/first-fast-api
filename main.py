@@ -5,17 +5,20 @@ from typing import Annotated
 app = FastAPI()
 
 
+# wire_in
 class UserIn(BaseModel):
     name: str
     age: int
 
 
+# wire_out
 class UserOut(BaseModel):
     id: int
     name: str
     age: int
 
 
+# database
 db: dict[int, UserOut] = {
     1: UserOut(id=1, name="Luiz", age=37),
     2: UserOut(id=2, name="Mara", age=65),
@@ -24,6 +27,7 @@ db: dict[int, UserOut] = {
 }
 
 
+# api
 @app.get("/users")
 def get_users(skip: int = 0, limit: int = 10):
     result = list(db.values())
