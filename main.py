@@ -2,8 +2,6 @@ from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import Annotated
 
-app = FastAPI()
-
 
 # wire_in
 class UserIn(BaseModel):
@@ -32,6 +30,9 @@ db: dict[int, UserOut] = {
 
 
 # api
+app = FastAPI()
+
+
 @app.get("/users", response_model=list[UserOut])
 def get_users(skip: int = 0, limit: int = 10) -> list[UserOut]:
     result = list(db.values())
