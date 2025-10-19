@@ -4,6 +4,7 @@ from typing import Annotated
 
 app = FastAPI()
 
+
 # wire_in
 class UserIn(BaseModel):
     name: str = Field(min_length=2)
@@ -32,13 +33,13 @@ db: dict[int, UserOut] = {
 
 # api
 @app.get("/users", response_model=list[UserOut])
-def get_users(skip: int = 0, limit: int = 10):
+def get_users(skip: int = 0, limit: int = 10) -> list[UserOut]:
     result = list(db.values())
     return result[skip : skip + limit]
 
 
 @app.post("/users", response_model=UserOut)
-def post_user(user: UserIn):
+def post_user(user: UserIn) -> UserOut:
     user.custom_validation()
 
     next_id = max(db.keys()) + 1
@@ -53,17 +54,17 @@ def post_user(user: UserIn):
 
 
 @app.get("/users/{user_id}", response_model=UserOut)
-def get_user(user_id: int):
+def get_user(user_id: int) -> UserOut:
     if user_id not in db.keys():
-        raise HTTPException(status_code=500, detail="User does not exists!")
+        raise HTTPException(status_code=404, detail="User not found!")
 
     return db[user_id]
 
 
 @app.put("/users/{user_id}", response_model=UserOut)
-def put_user(user_id: int, user: UserIn):
+def put_user(user_id: int, user: UserIn) -> UserOut:
     if user_id not in db.keys():
-        raise HTTPException(status_code=500, detail="User does not exists!")
+        raise HTTPException(status_code=404, detail="User not found!")
 
     updated_user = UserOut(
         id=user_id,
@@ -79,13 +80,13 @@ def put_user(user_id: int, user: UserIn):
 @app.delete("/users/{user_id}")
 def delete_user(user_id: int):
     if user_id not in db.keys():
-        raise HTTPException(status_code=500, detail="User does not exists!")
+        raise HTTPException(status_code=404, detail="User not found!")
 
     del db[user_id]
 
 
 @app.get("/users/search/", response_model=list[UserOut])
-def search_user(name: Annotated[str, Query(min_length=2)]):
+def search_user(name: Annotated[str, Query(min_length=2)]) -> list[UserOut]:
     result = [
         user for user in db.values() if user.name.lower().startswith(name.lower())
     ]
