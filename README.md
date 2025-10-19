@@ -47,6 +47,7 @@ pytest test_app.py
 ## Pydantic vs Dataclasses
 
 pydantic: integrated to the api, robust validation, helps in doc generation, good for public APIs
+
 dataclasses: preferred for internal data structures, best suit for domains to avoid dependencies, performatic, more explecit, more control, spend less momory, less overhead, may require more work to implemnt validations
 
 trade-off: Pydantic has a cost for its powerful data validation and parsing features
