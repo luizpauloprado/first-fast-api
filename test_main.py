@@ -18,7 +18,7 @@ def test_post_users():
     response = client.post("/users", json=json_post)
     data = response.json()
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert "id" in data
     assert data["name"] == json_post["name"]
     assert data["age"] == json_post["age"]
@@ -76,7 +76,7 @@ def test_delete_user():
     user_id = 1
     response = client.delete(f"/users/{user_id}")
 
-    assert response.status_code == 200
+    assert response.status_code == 204
 
 
 def test_delete_user_error():
