@@ -1,24 +1,27 @@
-from fastapi import FastAPI, HTTPException
-from dataclasses import dataclass
-
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field
+from typing import Annotated
 
 app = FastAPI()
 
+# pydantic vs dataclass
+# pydantic: integrated to the api, robust validation, helps in doc generation
+# dataclasses: preferred for internal data structures, performatic
+# = trade-off in Pydantic is a cost for its powerful data validation and parsing features
+
 
 # wire_in
-@dataclass
-class UserIn:
-    name: str
-    age: int
+class UserIn(BaseModel):
+    name: str = Field(min_length=2)
+    age: int = Field(gt=0)
 
-    def validate(self):
-        if not self.name or not self.age or self.age == 0:
-            raise HTTPException(status_code=500, detail="All fields are mandatory")
+    def custom_validation(self):
+        if self.age > 99:
+            raise HTTPException(status_code=500, detail="Age must be less than 99")
 
 
 # wire_out
-@dataclass
-class UserOut:
+class UserOut(BaseModel):
     id: int
     name: str
     age: int
@@ -34,15 +37,15 @@ db: dict[int, UserOut] = {
 
 
 # api
-@app.get("/users")
+@app.get("/users", response_model=list[UserOut])
 def get_users(skip: int = 0, limit: int = 10):
     result = list(db.values())
     return result[skip : skip + limit]
 
 
-@app.post("/users")
+@app.post("/users", response_model=UserOut)
 def post_user(user: UserIn):
-    user.validate()
+    user.custom_validation()
 
     next_id = max(db.keys()) + 1
     new_user = UserOut(
@@ -50,14 +53,12 @@ def post_user(user: UserIn):
         name=user.name,
         age=user.age,
     )
+    db[next_id] = new_user
 
-    db[new_user.id] = new_user
-    next_id += 1
-
-    return db[new_user.id]
+    return db[next_id]
 
 
-@app.get("/users/{user_id}")
+@app.get("/users/{user_id}", response_model=UserOut)
 def get_user(user_id: int):
     if user_id not in db.keys():
         raise HTTPException(status_code=500, detail="User does not exists!")
@@ -65,12 +66,10 @@ def get_user(user_id: int):
     return db[user_id]
 
 
-@app.put("/users/{user_id}")
+@app.put("/users/{user_id}", response_model=UserOut)
 def put_user(user_id: int, user: UserIn):
     if user_id not in db.keys():
         raise HTTPException(status_code=500, detail="User does not exists!")
-
-    user.validate()
 
     updated_user = UserOut(
         id=user_id,
@@ -91,13 +90,8 @@ def delete_user(user_id: int):
     del db[user_id]
 
 
-@app.get("/users/search/")
-def search_user(name: str):
-    if not name or len(name) < 2:
-        raise HTTPException(
-            status_code=500, detail="Name is mandatory and needs to have more than 2 characters"
-        )
-
+@app.get("/users/search/", response_model=list[UserOut])
+def search_user(name: Annotated[str, Query(min_length=2)]):
     result = [
         user for user in db.values() if user.name.lower().startswith(name.lower())
     ]
