@@ -4,12 +4,6 @@ from typing import Annotated
 
 app = FastAPI()
 
-# pydantic vs dataclass
-# pydantic: integrated to the api, robust validation, helps in doc generation
-# dataclasses: preferred for internal data structures, performatic, more work to validade
-# = trade-off in Pydantic is a cost for its powerful data validation and parsing features
-
-
 # wire_in
 class UserIn(BaseModel):
     name: str = Field(min_length=2)
