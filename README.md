@@ -17,6 +17,11 @@ Install deps:
 pip3 install -r requirements.txt
 ```
 
+Create .venv:
+```
+python -m venv .venv
+```
+
 Activate:
 
 ```
@@ -27,6 +32,11 @@ Deactivate:
 
 ```
 deactivate
+```
+
+Generate requirements.txt:
+```
+pip freeze > requirements.txt
 ```
 
 ## Deps
