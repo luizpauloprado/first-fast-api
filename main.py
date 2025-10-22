@@ -127,6 +127,23 @@ def put_user(user_id: int, user: UserIn):
     return db[user_id]
 
 
+@app.patch(
+    "/users/{user_id}",
+    response_model=UserOut,
+    response_model_exclude_none=True,
+)
+def patch_user(user_id: int, user: dict):
+    if user_id not in db.keys():
+        raise HTTPException(status_code=404, detail="User not found!")
+
+    saved_user = db[user_id]
+    saved_user.name = user["name"] if user.get("name") else saved_user.name
+    saved_user.age = user["age"] if user.get("age") else saved_user.age
+
+    db[user_id] = saved_user
+    return db[user_id]
+
+
 @app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int):
     if user_id not in db.keys():
@@ -140,8 +157,11 @@ def delete_user(user_id: int):
     response_model=list[UserOut],
     response_model_exclude_none=True,
 )
-def search_user(name: Annotated[str, Query(min_length=2)]):
+def search_user(name: Annotated[str, Query(min_length=2)], age: int | None = None):
     result = [
-        user for user in db.values() if user.name.lower().startswith(name.lower())
+        user
+        for user in db.values()
+        if user.name.lower().startswith(name.lower())
+        and (age is not None and user.age >= age)
     ]
     return result
