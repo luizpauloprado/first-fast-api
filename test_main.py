@@ -7,14 +7,14 @@ client = TestClient(app)
 def test_get_user():
     response = client.get("/users")
     data = response.json()
-
+    print(data)
     assert response.status_code == 200
     assert len(data) == 4
     assert isinstance(data, list)
 
 
-def test_post_users():
-    json_post = {"name": "Lula", "age": 80}
+def test_post_users_no_roles():
+    json_post = {"name": "Dilminha", "age": 80}
     response = client.post("/users", json=json_post)
     data = response.json()
 
@@ -22,6 +22,19 @@ def test_post_users():
     assert "id" in data
     assert data["name"] == json_post["name"]
     assert data["age"] == json_post["age"]
+    assert "roles" not in data
+
+
+def test_post_users_with_roles():
+    json_post = {"name": "Lula", "age": 80, "roles": {"allow": ["admin"]}}
+    response = client.post("/users", json=json_post)
+    data = response.json()
+
+    assert response.status_code == 201
+    assert "id" in data
+    assert data["name"] == json_post["name"]
+    assert data["age"] == json_post["age"]
+    assert data["roles"] == json_post["roles"]
 
 
 def test_post_user_error():
