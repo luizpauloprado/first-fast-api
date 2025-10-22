@@ -64,15 +64,27 @@ def test_get_user_error():
 
 
 def test_put_user():
-    user_id = 1
-    json_put = {"name": "LP", "age": 38}
+    user_id = 2
+    json_put = {"name": "Dona Mara", "age": 70}
     response = client.put(f"/users/{user_id}", json=json_put)
     data = response.json()
 
     assert response.status_code == 200
     assert data["id"] == user_id
-    assert data["name"] == "LP"
-    assert data["age"] == 38
+    assert data["name"] == json_put["name"]
+    assert data["age"] == json_put["age"]
+
+
+def test_patch_user():
+    user_id = 1
+    json_patch = {"name": "Luizin"}
+    response = client.patch(f"/users/{user_id}", json=json_patch)
+    data = response.json()
+    print(data)
+
+    assert response.status_code == 200
+    assert data["id"] == user_id
+    assert data["name"] == json_patch["name"]
 
 
 def test_put_user_error():
@@ -108,6 +120,24 @@ def test_get_user_search():
 
     assert response.status_code == 200
     assert len(data) == 1
+
+
+def test_get_user_search():
+    params = {"name": "Lu", "age": 80}
+    response = client.get("/users/search/", params=params)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 1
+
+
+def test_get_user_search_result_empty():
+    params = {"name": "Lu", "age": 81}
+    response = client.get("/users/search/", params=params)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 0
 
 
 def test_get_user_search_error():
