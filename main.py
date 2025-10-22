@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query, status
 from pydantic import BaseModel, Field, field_validator
 from typing import Annotated
+from enum import Enum
 
 
 # wire_in
@@ -20,6 +21,11 @@ class UserIn(BaseModel):
         if v > 100:
             raise ValueError("Age cannot be more than 100")
         return v
+
+
+class Order(Enum):
+    ASC = "ASC"
+    DESC = "DESC"
 
 
 # wire_out
@@ -157,11 +163,19 @@ def delete_user(user_id: int):
     response_model=list[UserOut],
     response_model_exclude_none=True,
 )
-def search_user(name: Annotated[str, Query(min_length=2)], age: int | None = None):
+def search_user(
+    name: Annotated[str, Query(min_length=2)],
+    age: int | None = None,
+    order: Order = Order.ASC,
+):
     result = [
         user
         for user in db.values()
         if user.name.lower().startswith(name.lower())
         and (age is not None and user.age >= age)
     ]
-    return result
+    sorted_result = sorted(
+        result, key=lambda user: user.name, reverse=(order == Order.DESC)
+    )
+
+    return sorted_result
